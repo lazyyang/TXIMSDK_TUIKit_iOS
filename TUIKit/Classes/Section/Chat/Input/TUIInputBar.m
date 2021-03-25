@@ -38,19 +38,22 @@
 
 - (void)setupViews
 {
-    self.backgroundColor = [UIColor d_colorWithColorLight:TInput_Background_Color dark:TInput_Background_Color_Dark];
+    self.backgroundColor = [UIColor whiteColor];
+    //[UIColor d_colorWithColorLight:TInput_Background_Color dark:TInput_Background_Color_Dark];
 
     _lineView = [[UIView alloc] init];
     _lineView.backgroundColor = [UIColor d_colorWithColorLight:TLine_Color dark:TLine_Color_Dark];
     [self addSubview:_lineView];
 
     _micButton = [[UIButton alloc] init];
+    _micButton.hidden = YES;
     [_micButton addTarget:self action:@selector(clickVoiceBtn:) forControlEvents:UIControlEventTouchUpInside];
     [_micButton setImage:[UIImage tk_imageNamed:@"ToolViewInputVoice"] forState:UIControlStateNormal];
     [_micButton setImage:[UIImage tk_imageNamed:@"ToolViewInputVoiceHL"] forState:UIControlStateHighlighted];
     [self addSubview:_micButton];
 
     _faceButton = [[UIButton alloc] init];
+    _faceButton.hidden = YES;
     [_faceButton addTarget:self action:@selector(clickFaceBtn:) forControlEvents:UIControlEventTouchUpInside];
     [_faceButton setImage:[UIImage tk_imageNamed:@"ToolViewEmotion"] forState:UIControlStateNormal];
     [_faceButton setImage:[UIImage tk_imageNamed:@"ToolViewEmotionHL"] forState:UIControlStateHighlighted];
@@ -70,6 +73,7 @@
     [self addSubview:_moreButton];
 
     _recordButton = [[UIButton alloc] init];
+    _recordButton.hidden = YES;
     [_recordButton.titleLabel setFont:[UIFont systemFontOfSize:15.0f]];
     [_recordButton.layer setMasksToBounds:YES];
     [_recordButton.layer setCornerRadius:4.0f];
@@ -84,6 +88,12 @@
     [_recordButton setTitleColor:[UIColor d_colorWithColorLight:TText_Color dark:TText_Color_Dark] forState:UIControlStateNormal];
     _recordButton.hidden = YES;
     [self addSubview:_recordButton];
+    
+    _headImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
+    [self addSubview:_headImageView];
+    _headImageView.layer.cornerRadius = 15;
+    _headImageView.clipsToBounds = YES;
+//    _headImageView.backgroundColor = [UIColor redColor];
 
     _inputTextView = [[TResponderTextView alloc] init];
     _inputTextView.delegate = self;
@@ -103,13 +113,15 @@
     CGFloat buttonOriginY = (TTextView_Height - buttonSize.height) * 0.5;
     _micButton.frame = CGRectMake(TTextView_Margin, buttonOriginY, buttonSize.width, buttonSize.height);
     _keyboardButton.frame = _micButton.frame;
-    _moreButton.frame = CGRectMake(Screen_Width - buttonSize.width - TTextView_Margin, buttonOriginY, buttonSize.width, buttonSize.height);
+    _moreButton.frame = CGRectMake(Screen_Width - buttonSize.width - TTextView_Margin - 10, buttonOriginY, buttonSize.width, buttonSize.height);
     _faceButton.frame = CGRectMake(_moreButton.frame.origin.x - buttonSize.width - TTextView_Margin, buttonOriginY, buttonSize.width, buttonSize.height);
 
     CGFloat beginX = _micButton.frame.origin.x + _micButton.frame.size.width + TTextView_Margin;
     CGFloat endX = _faceButton.frame.origin.x - TTextView_Margin;
-    _recordButton.frame = CGRectMake(beginX, (TTextView_Height - TTextView_TextView_Height_Min) * 0.5, endX - beginX, TTextView_TextView_Height_Min);
+    _recordButton.frame = CGRectMake(60, (TTextView_Height - TTextView_TextView_Height_Min) * 0.5, endX - beginX + 10, TTextView_TextView_Height_Min);
     _inputTextView.frame = _recordButton.frame;
+    
+    _headImageView.center = CGPointMake(35.0f, _inputTextView.center.y);
 }
 
 - (void)layoutButton:(CGFloat)height
@@ -145,9 +157,9 @@
 {
     _recordButton.hidden = NO;
     _inputTextView.hidden = YES;
-    _micButton.hidden = YES;
-    _keyboardButton.hidden = NO;
-    _faceButton.hidden = NO;
+//    _micButton.hidden = YES;
+//    _keyboardButton.hidden = NO;
+//    _faceButton.hidden = NO;
     [_inputTextView resignFirstResponder];
     [self layoutButton:TTextView_Height];
     if(_delegate && [_delegate respondsToSelector:@selector(inputBarDidTouchMore:)]){
@@ -158,11 +170,11 @@
 
 - (void)clickKeyboardBtn:(UIButton *)sender
 {
-    _micButton.hidden = NO;
-    _keyboardButton.hidden = YES;
+//    _micButton.hidden = NO;
+//    _keyboardButton.hidden = YES;
     _recordButton.hidden = YES;
     _inputTextView.hidden = NO;
-    _faceButton.hidden = NO;
+//    _faceButton.hidden = NO;
     [self layoutButton:_inputTextView.frame.size.height + 2 * TTextView_Margin];
     if(_delegate && [_delegate respondsToSelector:@selector(inputBarDidTouchKeyboard:)]){
         [_delegate inputBarDidTouchKeyboard:self];
@@ -172,8 +184,8 @@
 - (void)clickFaceBtn:(UIButton *)sender
 {
     _micButton.hidden = NO;
-    _faceButton.hidden = YES;
-    _keyboardButton.hidden = NO;
+//    _faceButton.hidden = YES;
+//    _keyboardButton.hidden = NO;
     _recordButton.hidden = YES;
     _inputTextView.hidden = NO;
     if(_delegate && [_delegate respondsToSelector:@selector(inputBarDidTouchFace:)]){
@@ -284,9 +296,9 @@
 
 - (void)textViewDidBeginEditing:(UITextView *)textView
 {
-    self.keyboardButton.hidden = YES;
-    self.micButton.hidden = NO;
-    self.faceButton.hidden = NO;
+//    self.keyboardButton.hidden = YES;
+//    self.micButton.hidden = NO;
+//    self.faceButton.hidden = NO;
 }
 
 - (void)textViewDidChange:(UITextView *)textView

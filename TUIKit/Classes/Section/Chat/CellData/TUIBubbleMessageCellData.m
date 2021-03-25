@@ -15,6 +15,7 @@
 {
     self = [super initWithDirection:direction];
     if (self) {
+        _mydirection = direction;
         if (direction == MsgDirectionIncoming) {
             _bubble = [[self class] incommingBubble];
             _highlightedBubble = [[self class] incommingHighlightedBubble];

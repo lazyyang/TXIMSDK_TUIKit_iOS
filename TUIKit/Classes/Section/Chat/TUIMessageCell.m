@@ -29,7 +29,7 @@
         self.backgroundColor = [UIColor clearColor];
         //head
         _avatarView = [[UIImageView alloc] init];
-        _avatarView.contentMode = UIViewContentModeScaleAspectFit;
+        _avatarView.contentMode = UIViewContentModeScaleAspectFill;
         [self.contentView addSubview:_avatarView];
         UITapGestureRecognizer *tap1 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onSelectMessageAvatar:)];
         [_avatarView addGestureRecognizer:tap1];

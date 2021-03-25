@@ -29,6 +29,7 @@
 #import "TUIKit.h"
 #import "TUIGroupLiveMessageCell.h"
 #import "NSBundle+TUIKIT.h"
+#import <SDWebImage/SDWebImage.h>
 
 @interface TUIChatController () <TMessageControllerDelegate, TInputControllerDelegate, UIImagePickerControllerDelegate, UIDocumentPickerDelegate, UINavigationControllerDelegate>
 @property (nonatomic, strong) TUIConversationCellData *conversationData;
@@ -52,6 +53,7 @@
         NSMutableArray *moreMenus = [NSMutableArray array];
         [moreMenus addObject:[TUIInputMoreCellData photoData]];
         [moreMenus addObject:[TUIInputMoreCellData pictureData]];
+/*
         [moreMenus addObject:[TUIInputMoreCellData videoData]];
         [moreMenus addObject:[TUIInputMoreCellData fileData]];
         [moreMenus addObject:[TUIInputMoreCellData videoCallData]];
@@ -59,6 +61,7 @@
         if ([TUIKit sharedInstance].config.enableGroupLiveEntry && conversationData.groupID.length > 0) {
             [moreMenus addObject:[TUIInputMoreCellData groupLivePalyData]];
         }
+ */
         _moreMenus = moreMenus;
 
         if (self.conversationData.groupID.length > 0) {
@@ -74,6 +77,40 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setupViews];
+//    self.navigationController.navigationItem.leftBarButtonItem = nil;
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    self.navigationController.navigationItem.title = self.conversationData.title;
+//    self.navigationController.navigationItem.hidesBackButton = YES;
+//    UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//    [backButton setImage:[UIImage imageNamed:TUIKitResource(@"keyboard_arrow_left - material")] forState:UIControlStateNormal];
+//    [backButton setImage:[UIImage imageNamed:TUIKitResource(@"keyboard_arrow_left - material")] forState:UIControlStateHighlighted];
+//    [backButton addTarget:self action:@selector(back:) forControlEvents:UIControlEventTouchUpInside];
+////    backButton.frame = CGRectMake(0, 0, 50, 50);
+//    self.navigationController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
+    //[[UIBarButtonItem alloc] initWithTitle:@"分享" style:UIBarButtonItemStylePlain target:self action:@selector(shareBtnPressed:)];
+//    @[[[UIBarButtonItem alloc] initWithCustomView:backButton]];
+}
+
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+    [super.view hitTest:point withEvent:event];
+//    UIView *retView = nil;
+//    NSLog(@"hitTest %@ Entry! event=%@", self.name, event);
+//
+//    retView = [super hitTest:point withEvent:event];
+//    NSLog(@"hitTest %@ Exit! view = %@", self.name, retView);
+//
+//    return retView;
+}
+
+- (void)back:(UIButton *)button
+{
+    [self.parentViewController.navigationController popViewControllerAnimated:YES];
+    //    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -95,16 +132,17 @@
 
 - (void)setupViews
 {
-    self.view.backgroundColor = [UIColor d_colorWithColorLight:TController_Background_Color dark:TController_Background_Color_Dark];
+    self.view.backgroundColor = [UIColor whiteColor];
+    //[UIColor d_colorWithColorLight:TController_Background_Color dark:TController_Background_Color_Dark];
 
     @weakify(self)
     //message
     _messageController = [[TUIMessageController alloc] init];
-    _messageController.view.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - TTextView_Height - Bottom_SafeHeight);
     _messageController.delegate = self;
     [self addChildViewController:_messageController];
     [self.view addSubview:_messageController.view];
     [_messageController setConversation:self.conversationData];
+    _messageController.view.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - TTextView_Height - Bottom_SafeHeight);
 
     //input
     _inputController = [[TUIInputController alloc] init];
@@ -118,6 +156,9 @@
     [self addChildViewController:_inputController];
     [self.view addSubview:_inputController.view];
     _inputController.inputBar.inputTextView.text = self.conversationData.draftText;
+    [_inputController.inputBar.headImageView sd_setImageWithURL:[NSURL URLWithString:self.conversationData.faceUrl] completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+            
+    }];
     self.tipsView = [[UIView alloc] initWithFrame:CGRectZero];
     self.tipsView.backgroundColor = RGB(246, 234, 190);
     [self.view addSubview:self.tipsView];

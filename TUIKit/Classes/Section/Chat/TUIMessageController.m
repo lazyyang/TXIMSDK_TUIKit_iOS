@@ -133,7 +133,8 @@
     self.tableView.scrollsToTop = NO;
     self.tableView.estimatedRowHeight = 0;
     [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
-    self.tableView.backgroundColor = [UIColor d_colorWithColorLight:TController_Background_Color dark:TController_Background_Color_Dark];
+    self.tableView.backgroundColor = [UIColor whiteColor];
+    //[UIColor d_colorWithColorLight:TController_Background_Color dark:TController_Background_Color_Dark];
 
     [self.tableView registerClass:[TUITextMessageCell class] forCellReuseIdentifier:TTextMessageCell_ReuseId];
     [self.tableView registerClass:[TUIVoiceMessageCell class] forCellReuseIdentifier:TVoiceMessageCell_ReuseId];

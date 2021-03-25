@@ -142,7 +142,7 @@
 //more item cell
 #define TMoreCell_ReuseId @"TMoreCell"
 #define TMoreCell_Margin 5
-#define TMoreCell_Image_Size CGSizeMake(70, 70)
+#define TMoreCell_Image_Size CGSizeMake(60, 60)
 #define TMoreCell_Title_Height 20
 
 //face item cell
@@ -291,7 +291,8 @@
 
 // input view commom color
 #define TInput_Background_Color  RGBA(246, 246, 246, 1.0)
-#define TInput_Background_Color_Dark  RGBA(30, 30, 30, 1.0)
+#define TInput_Background_Color_Dark RGBA(255, 255, 255, 1.0)
+//RGBA(30, 30, 30, 1.0)
 
 
 //resource

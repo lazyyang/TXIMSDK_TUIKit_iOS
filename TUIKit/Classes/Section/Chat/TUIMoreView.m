@@ -33,7 +33,8 @@
 
 - (void)setupViews
 {
-    self.backgroundColor = [UIColor d_colorWithColorLight:TInput_Background_Color dark:TInput_Background_Color_Dark];
+    self.backgroundColor = [UIColor whiteColor];
+    //[UIColor d_colorWithColorLight:TInput_Background_Color dark:TInput_Background_Color_Dark];
 
     _moreFlowLayout = [[UICollectionViewFlowLayout alloc] init];
     _moreFlowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;

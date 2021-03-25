@@ -148,8 +148,8 @@
 "TUIKitMessageTypeAnimateEmoji" = "[动画表情]";
 "TUIKitMessageTypeDraftFormat" = "[草稿] %@";
 
-"TUIKitMoreCamera" = "拍照";
-"TUIKitMorePhoto" = "相册";
+"TUIKitMoreCamera" = "拍摄";
+"TUIKitMorePhoto" = "照片";
 "TUIKitMoreVideo" = "录像";
 "TUIKitMoreFile" = "文件";
 "TUIKitMoreVideoCall" = "视频通话";

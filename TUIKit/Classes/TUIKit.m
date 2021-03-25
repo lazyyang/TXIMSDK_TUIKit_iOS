@@ -28,6 +28,9 @@
     self = [super init];
     if (self) {
         _config = [TUIKitConfig defaultConfig];
+        // 修改默认头像
+        _config.avatarType = TAvatarTypeRounded;
+
         [self createCachePath];
     }
     return self;

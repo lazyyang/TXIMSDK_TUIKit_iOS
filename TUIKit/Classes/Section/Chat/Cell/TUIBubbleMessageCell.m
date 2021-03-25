@@ -31,8 +31,11 @@
 {
     [super fillWithData:data];
     self.bubbleData = data;
-    self.bubbleView.image = data.bubble;
-    self.bubbleView.highlightedImage = data.highlightedBubble;
+    if (data.direction == MsgDirectionOutgoing) {
+        self.bubbleView.backgroundColor = [UIColor colorWithRed:77.0f/255.0f green:189.0f/255.0f blue:253.0f/255.0f alpha:1.0];
+    } else{
+        self.bubbleView.backgroundColor = [UIColor colorWithRed:241.0f/255.0f green:240.0f/255.0f blue:240.0f/255.0f alpha:1.0];
+    }
 }
 
 - (void)layoutSubviews
@@ -40,5 +43,16 @@
     [super layoutSubviews];
     self.bubbleView.mm_top(self.bubbleData.bubbleTop);
     self.retryView.mm__centerY(self.bubbleView.mm_centerY);
+    if (self.bubbleData.mydirection == MsgDirectionOutgoing) {
+        UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bubbleView.bounds      byRoundingCorners:UIRectCornerTopLeft | UIRectCornerBottomLeft  | UIRectCornerTopRight  cornerRadii:CGSizeMake(15, 15)];
+        CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+        maskLayer.path = maskPath.CGPath;
+        self.bubbleView.layer.mask = maskLayer;
+    } else{
+        UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:self.bubbleView.bounds      byRoundingCorners:UIRectCornerTopLeft | UIRectCornerBottomRight  | UIRectCornerTopRight  cornerRadii:CGSizeMake(15, 15)];
+        CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+        maskLayer.path = maskPath.CGPath;
+        self.bubbleView.layer.mask = maskLayer;
+    }
 }
 @end

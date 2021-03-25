@@ -121,6 +121,13 @@
  */
 @interface TUIInputBar : UIView
 
+
+/**
+ *  头像显示
+ *
+ */
+@property (nonatomic, strong) UIImageView *headImageView;
+
 /**
  *  线视图
  *  在视图中的分界线，使得 InputBar 与其他视图在视觉上区分，从而让 InputBar 在显示逻辑上更加清晰有序。

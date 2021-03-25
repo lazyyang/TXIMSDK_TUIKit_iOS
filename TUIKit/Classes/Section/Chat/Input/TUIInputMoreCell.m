@@ -30,7 +30,6 @@ static TUIInputMoreCellData *TUI_GroupLivePlay_MoreCell;
         TUI_Picture_MoreCell = [[TUIInputMoreCellData alloc] init];
         TUI_Picture_MoreCell.title = TUILocalizableString(TUIKitMoreCamera);
         TUI_Picture_MoreCell.image = [UIImage tk_imageNamed:@"more_camera"];
-
     }
     return TUI_Picture_MoreCell;
 }

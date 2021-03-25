@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface TUIBubbleMessageCellData : TUIMessageCellData
 
+@property (assign, nonatomic) TMsgDirection mydirection;
+
 /**
  *  气泡顶部 以便确定气泡位置
  *  该数值用于确定气泡位置，方便气泡内的内容进行 UI 布局。
