@@ -32,6 +32,8 @@
 
 @property (strong, nonatomic) UISearchController *mysearchController;
 
+@property (strong, nonatomic) NSArray *searchArray;
+
 @end
 
 @implementation TUIContactController
@@ -47,6 +49,21 @@
 -(void)updateSearchResultsForSearchController:(UISearchController *)searchController {
     
     NSLog(@"updateSearchResultsForSearchController");
+    NSString *searchText = [searchController.searchBar text];
+    NSInteger count = self.viewModel.groupList.count;
+    NSMutableArray *mulArray = [[NSMutableArray alloc] init];
+    for (int i = 0; i < count; i ++) {
+        NSString *group = self.viewModel.groupList[i];
+        NSArray *list = self.viewModel.dataDict[group];
+        [mulArray addObjectsFromArray:list];
+    }
+//    NSString *group = self.viewModel.groupList[0];
+//    NSArray *list = self.viewModel.dataDict[group];
+//    NSLog(@"%@",list);
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"title CONTAINS  %@", searchText];
+    self.searchArray = [mulArray filteredArrayUsingPredicate:predicate];
+    [self.tableView reloadData];
+
 //    [self.filteredDataSource.allGroups removeAllObjects];
 //    NSString *searchText = [searchController.searchBar text];
 //    NSMutableArray *arr = [[ContactManager shared] searchUsersByText:searchText listType:0];
@@ -100,6 +117,7 @@
     _mysearchController.automaticallyAdjustsScrollViewInsets = NO;
     self.searchDisplayController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     _mysearchController.searchBar.returnKeyType = UIReturnKeyDone;
+    _mysearchController.hidesNavigationBarDuringPresentation = NO;
     self.definesPresentationContext = YES;
     //设置代理
     _mysearchController.delegate = self;
@@ -109,8 +127,6 @@
     _mysearchController.searchBar.backgroundImage = [self imageWithColor:[UIColor whiteColor] size:_mysearchController.searchBar.bounds.size];
     //搜索时，背景变暗色
     _mysearchController.dimsBackgroundDuringPresentation = NO;
-    //隐藏导航栏
-    _mysearchController.hidesNavigationBarDuringPresentation = YES;
     
     // 添加 searchbar 到 headerview
     self.tableView.tableHeaderView = _mysearchController.searchBar;
@@ -166,11 +182,17 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView;
 {
+    if ([self enableForSearchTableView:tableView]) {
+        return 1;
+    }
     return self.viewModel.groupList.count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+    if ([self enableForSearchTableView:tableView]) {
+        return self.searchArray.count;
+    }
     NSString *group = self.viewModel.groupList[section];
     NSArray *list = self.viewModel.dataDict[group];
     return list.count;
@@ -178,25 +200,28 @@
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-    #define TEXT_TAG 1
-    static NSString *headerViewId = @"ContactDrawerView";
-    UITableViewHeaderFooterView *headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:headerViewId];
-    if (!headerView)
-    {
-        headerView = [[UITableViewHeaderFooterView alloc] initWithReuseIdentifier:headerViewId];
-        headerView.backgroundColor = RGB(0xfa, 0xfa, 0xfa);
-        UILabel *textLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-        textLabel.tag = TEXT_TAG;
-        textLabel.font = [UIFont systemFontOfSize:16];
-        textLabel.textColor = RGB(0xe9, 0x48, 0x48);
-        [headerView addSubview:textLabel];
-        textLabel.mm_fill().mm_left(12);
-        textLabel.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    if ([self enableForSearchTableView:tableView]) {
+        return  nil;
+    } else{
+        #define TEXT_TAG 1
+        static NSString *headerViewId = @"ContactDrawerView";
+        UITableViewHeaderFooterView *headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:headerViewId];
+        if (!headerView)
+        {
+            headerView = [[UITableViewHeaderFooterView alloc] initWithReuseIdentifier:headerViewId];
+            headerView.backgroundColor = RGB(0xfa, 0xfa, 0xfa);
+            UILabel *textLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+            textLabel.tag = TEXT_TAG;
+            textLabel.font = [UIFont systemFontOfSize:16];
+            textLabel.textColor = RGB(0xe9, 0x48, 0x48);
+            [headerView addSubview:textLabel];
+            textLabel.mm_fill().mm_left(12);
+            textLabel.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+        }
+        UILabel *label = [headerView viewWithTag:TEXT_TAG];
+        label.text = self.viewModel.groupList[section];
+        return headerView;
     }
-    UILabel *label = [headerView viewWithTag:TEXT_TAG];
-    label.text = self.viewModel.groupList[section];
-
-    return headerView;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -206,6 +231,9 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
+    if ([self enableForSearchTableView:tableView]) {
+        return 0;
+    }
     return 33;
 }
 
@@ -218,15 +246,20 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     TCommonContactCell *cell = [tableView dequeueReusableCellWithIdentifier:kContactCellReuseId forIndexPath:indexPath];
-    NSString *group = self.viewModel.groupList[indexPath.section];
-    NSArray *list = self.viewModel.dataDict[group];
-    TCommonContactCellData *data = list[indexPath.row];
-    data.cselector = @selector(onSelectFriend:);
-    [cell fillWithData:data];
-
-    //可以在此处修改，也可以在对应cell的初始化中进行修改。用户可以灵活的根据自己的使用需求进行设置。
-//    cell.changeColorWhenTouched = YES;
-    return cell;
+    NSArray *list;
+    if ([self enableForSearchTableView:tableView]) {
+        TCommonContactCellData *data = self.searchArray[indexPath.row];
+        data.cselector = @selector(onSelectFriend:);
+        [cell fillWithData:data];
+        return cell;
+    } else{
+        NSString *group = self.viewModel.groupList[indexPath.section];
+        list = self.viewModel.dataDict[group];
+        TCommonContactCellData *data = list[indexPath.row];
+        data.cselector = @selector(onSelectFriend:);
+        [cell fillWithData:data];
+        return cell;
+    }
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
