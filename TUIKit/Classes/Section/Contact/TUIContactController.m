@@ -29,40 +29,15 @@
 #define kContactActionCellReuseId @"ContactActionCellReuseId"
 
 @interface TUIContactController () <UITableViewDelegate,UITableViewDataSource,TUIConversationListControllerDelegate>
-@property NSArray<TUIContactActionCellData *> *firstGroupData;
 @end
 
 @implementation TUIContactController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    NSMutableArray *list = @[].mutableCopy;
-    [list addObject:({
-        TUIContactActionCellData *data = [[TUIContactActionCellData alloc] init];
-        data.icon = [UIImage imageNamed:TUIKitResource(@"new_friend")];
-        data.title = TUILocalizableString(TUIKitContactsNewFriends); // @"新的联系人";
-        data.cselector = @selector(onAddNewFriend:);
-        data;
-    })];
-    [list addObject:({
-        TUIContactActionCellData *data = [[TUIContactActionCellData alloc] init];
-        data.icon = [UIImage imageNamed:TUIKitResource(@"public_group")];
-        data.title = TUILocalizableString(TUIKitContactsGroupChats); // @"群聊";
-        data.cselector = @selector(onGroupConversation:);
-        data;
-    })];
-    [list addObject:({
-        TUIContactActionCellData *data = [[TUIContactActionCellData alloc] init];
-        data.icon = [UIImage imageNamed:TUIKitResource(@"blacklist")];
-        data.title = TUILocalizableString(TUIKitContactsBlackList); // @"黑名单";
-        data.cselector = @selector(onBlackList:);
-        data;
-    })];
-    self.firstGroupData = [NSArray arrayWithArray:list];
-
-
     self.navigationController.interactivePopGestureRecognizer.enabled = YES;
-    self.view.backgroundColor = [UIColor d_colorWithColorLight:TController_Background_Color dark:TController_Background_Color_Dark];
+    self.view.backgroundColor = [UIColor whiteColor];
+    //[UIColor d_colorWithColorLight:TController_Background_Color dark:TController_Background_Color_Dark];
     _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
     _tableView.delegate = self;
     _tableView.dataSource = self;
@@ -94,10 +69,14 @@
             [self.tableView reloadData];
         }
     }];
-    [RACObserve(self.viewModel, pendencyCnt) subscribeNext:^(NSNumber *x) {
-        self.firstGroupData[0].readNum = [x integerValue];
-    }];
+
     [_viewModel loadContacts];
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    self.navigationController.navigationItem.title = @"新消息";
 }
 
 - (TContactViewModel *)viewModel
@@ -119,41 +98,35 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView;
 {
-    return self.viewModel.groupList.count + 1;
+    return self.viewModel.groupList.count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if (section == 0) {
-        return self.firstGroupData.count;
-    } else {
-        NSString *group = self.viewModel.groupList[section-1];
-        NSArray *list = self.viewModel.dataDict[group];
-        return list.count;
-    }
+    NSString *group = self.viewModel.groupList[section];
+    NSArray *list = self.viewModel.dataDict[group];
+    return list.count;
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-    if (section == 0)
-        return nil;
-
-#define TEXT_TAG 1
+    #define TEXT_TAG 1
     static NSString *headerViewId = @"ContactDrawerView";
     UITableViewHeaderFooterView *headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:headerViewId];
     if (!headerView)
     {
         headerView = [[UITableViewHeaderFooterView alloc] initWithReuseIdentifier:headerViewId];
+        headerView.backgroundColor = RGB(0xfa, 0xfa, 0xfa);
         UILabel *textLabel = [[UILabel alloc] initWithFrame:CGRectZero];
         textLabel.tag = TEXT_TAG;
         textLabel.font = [UIFont systemFontOfSize:16];
-        textLabel.textColor = RGB(0x80, 0x80, 0x80);
+        textLabel.textColor = RGB(0xe9, 0x48, 0x48);
         [headerView addSubview:textLabel];
         textLabel.mm_fill().mm_left(12);
         textLabel.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     }
     UILabel *label = [headerView viewWithTag:TEXT_TAG];
-    label.text = self.viewModel.groupList[section-1];
+    label.text = self.viewModel.groupList[section];
 
     return headerView;
 }
@@ -165,9 +138,6 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    if (section == 0)
-        return 0;
-
     return 33;
 }
 
@@ -179,63 +149,32 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section == 0) {
-        TUIContactActionCell *cell = [tableView dequeueReusableCellWithIdentifier:kContactActionCellReuseId forIndexPath:indexPath];
-        [cell fillWithData:self.firstGroupData[indexPath.row]];
+    TCommonContactCell *cell = [tableView dequeueReusableCellWithIdentifier:kContactCellReuseId forIndexPath:indexPath];
+    NSString *group = self.viewModel.groupList[indexPath.section];
+    NSArray *list = self.viewModel.dataDict[group];
+    TCommonContactCellData *data = list[indexPath.row];
+    data.cselector = @selector(onSelectFriend:);
+    [cell fillWithData:data];
 
-        //可以在此处修改，也可以在对应cell的初始化中进行修改。用户可以灵活的根据自己的使用需求进行设置。
-        cell.changeColorWhenTouched = YES;
-        return cell;
-    } else {
-        TCommonContactCell *cell = [tableView dequeueReusableCellWithIdentifier:kContactCellReuseId forIndexPath:indexPath];
-        NSString *group = self.viewModel.groupList[indexPath.section-1];
-        NSArray *list = self.viewModel.dataDict[group];
-        TCommonContactCellData *data = list[indexPath.row];
-        data.cselector = @selector(onSelectFriend:);
-        [cell fillWithData:data];
-
-        //可以在此处修改，也可以在对应cell的初始化中进行修改。用户可以灵活的根据自己的使用需求进行设置。
-        cell.changeColorWhenTouched = YES;
-        return cell;
-    }
+    //可以在此处修改，也可以在对应cell的初始化中进行修改。用户可以灵活的根据自己的使用需求进行设置。
+//    cell.changeColorWhenTouched = YES;
+    return cell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
 
 }
 
 
 - (void)onSelectFriend:(TCommonContactCell *)cell
 {
-    TCommonContactCellData *data = cell.contactData;
-
-    id<TUIFriendProfileControllerServiceProtocol> vc = [[TCServiceManager shareInstance] createService:@protocol(TUIFriendProfileControllerServiceProtocol)];
-    if ([vc isKindOfClass:[UIViewController class]]) {
-        vc.friendProfile = data.friendProfile;
-        [self.navigationController pushViewController:(UIViewController *)vc animated:YES];
-    }
+    TUIConversationCellData *data = [[TUIConversationCellData alloc] init];
+    data.userID = cell.contactData.friendProfile.userID;
+    TUIChatController *chat = [[TUIChatController alloc] initWithConversation:data];
+    chat.title = cell.contactData.friendProfile.userFullInfo.nickName;
+    [self.navigationController pushViewController:chat animated:YES];
 }
-
-- (void)onAddNewFriend:(TCommonTableViewCell *)cell
-{
-    TUINewFriendViewController *vc = TUINewFriendViewController.new;
-    [self.navigationController pushViewController:vc animated:YES];
-    [self.viewModel clearApplicationCnt];
-}
-
-- (void)onGroupConversation:(TCommonTableViewCell *)cell
-{
-    TUIGroupConversationListController *vc = TUIGroupConversationListController.new;
-    vc.title = TUILocalizableString(TUIKitContactsGroupChats); // @"群聊";
-    [self.navigationController pushViewController:vc animated:YES];
-}
-
-- (void)onBlackList:(TCommonContactCell *)cell
-{
-    TUIBlackListController *vc = TUIBlackListController.new;
-    [self.navigationController pushViewController:vc animated:YES];
-}
-
 
 - (void)conversationListController:(TUIConversationListController *)conversationController didSelectConversation:(TUIConversationCell *)conversation;
 {

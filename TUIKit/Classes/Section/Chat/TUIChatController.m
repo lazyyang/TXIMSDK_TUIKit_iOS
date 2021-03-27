@@ -156,9 +156,7 @@
     [self addChildViewController:_inputController];
     [self.view addSubview:_inputController.view];
     _inputController.inputBar.inputTextView.text = self.conversationData.draftText;
-    [_inputController.inputBar.headImageView sd_setImageWithURL:[NSURL URLWithString:self.conversationData.faceUrl] completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
-            
-    }];
+    [_inputController.inputBar.headImageView sd_setImageWithURL:[NSURL URLWithString:self.conversationData.faceUrl] placeholderImage:[UIImage imageNamed:TUIKitResource(@"default_c2c_head")]];
     self.tipsView = [[UIView alloc] initWithFrame:CGRectZero];
     self.tipsView.backgroundColor = RGB(246, 234, 190);
     [self.view addSubview:self.tipsView];
