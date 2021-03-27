@@ -28,10 +28,59 @@
 #define kContactCellReuseId @"ContactCellReuseId"
 #define kContactActionCellReuseId @"ContactActionCellReuseId"
 
-@interface TUIContactController () <UITableViewDelegate,UITableViewDataSource,TUIConversationListControllerDelegate>
+@interface TUIContactController () <UITableViewDelegate,UITableViewDataSource,TUIConversationListControllerDelegate,UISearchControllerDelegate,UISearchResultsUpdating>
+
+@property (strong, nonatomic) UISearchController *mysearchController;
+
 @end
 
 @implementation TUIContactController
+
+#pragma mark - SearchTableView Helper Method
+- (BOOL)enableForSearchTableView:(UITableView *)tableView {
+    if (self.mysearchController.active) {
+        return YES;
+    }
+    return NO;
+}
+
+-(void)updateSearchResultsForSearchController:(UISearchController *)searchController {
+    
+    NSLog(@"updateSearchResultsForSearchController");
+//    [self.filteredDataSource.allGroups removeAllObjects];
+//    NSString *searchText = [searchController.searchBar text];
+//    NSMutableArray *arr = [[ContactManager shared] searchUsersByText:searchText listType:0];
+//    if ([arr count] > 0) {
+//        PFGroupData *theGroup = [self.filteredDataSource addGroupWithType:1 title:@"联系人"];
+//        for (UserModel *user in arr) {
+//            [theGroup addCell:[PFCellData cellWithModel:user] cellType:CONTACT_TABLE_VIEW_CELL_TYPE_CONTACT height:0];
+//        }
+//    }
+//    NSMutableArray *arrDept= [[ContactManager shared] searchDeptsByText:searchText listType:0];
+//    if ([arrDept count] > 0) {
+//        PFGroupData *theGroupDept = [self.filteredDataSource addGroupWithType:0 title:@"部门"];
+//        for (DeptModel *dept in arrDept) {
+//            [theGroupDept addCell:[PFCellData cellWithModel:dept] cellType:CONTACT_TABLE_VIEW_CELL_TYPE_DEPT height:0];
+//        }
+//    }
+//    [self.tableView reloadData];
+}
+
+//根据颜色来绘制背景图片
+- (UIImage *)imageWithColor:(UIColor *)color size:(CGSize)size
+{
+    CGRect rect = CGRectMake(0, 0, size.width, size.height);
+    UIGraphicsBeginImageContext(rect.size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    CGContextSetFillColorWithColor(context, [color CGColor]);
+    CGContextFillRect(context, rect);
+    
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return image;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -46,6 +95,25 @@
     [_tableView setSectionIndexColor:[UIColor darkGrayColor]];
     [_tableView setBackgroundColor:self.view.backgroundColor];
     [self.view addSubview:_tableView];
+    
+    _mysearchController = [[UISearchController alloc] initWithSearchResultsController:nil];
+    _mysearchController.automaticallyAdjustsScrollViewInsets = NO;
+    self.searchDisplayController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    _mysearchController.searchBar.returnKeyType = UIReturnKeyDone;
+    self.definesPresentationContext = YES;
+    //设置代理
+    _mysearchController.delegate = self;
+    _mysearchController.searchResultsUpdater= self;
+    _mysearchController.searchBar.placeholder = @"搜索用户";
+    [_mysearchController.searchBar sizeToFit];
+    _mysearchController.searchBar.backgroundImage = [self imageWithColor:[UIColor whiteColor] size:_mysearchController.searchBar.bounds.size];
+    //搜索时，背景变暗色
+    _mysearchController.dimsBackgroundDuringPresentation = NO;
+    //隐藏导航栏
+    _mysearchController.hidesNavigationBarDuringPresentation = YES;
+    
+    // 添加 searchbar 到 headerview
+    self.tableView.tableHeaderView = _mysearchController.searchBar;
      
     //cell无数据时，不显示间隔线
     UIView *v = [[UIView alloc] initWithFrame:CGRectZero];
