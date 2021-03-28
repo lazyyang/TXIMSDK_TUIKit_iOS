@@ -30,6 +30,7 @@
 #import "TUIGroupLiveMessageCell.h"
 #import "NSBundle+TUIKIT.h"
 #import <SDWebImage/SDWebImage.h>
+#import "TTextEditController.h"
 
 @interface TUIChatController () <TMessageControllerDelegate, TInputControllerDelegate, UIImagePickerControllerDelegate, UIDocumentPickerDelegate, UINavigationControllerDelegate>
 @property (nonatomic, strong) TUIConversationCellData *conversationData;
@@ -91,26 +92,78 @@
 //    [backButton addTarget:self action:@selector(back:) forControlEvents:UIControlEventTouchUpInside];
 ////    backButton.frame = CGRectMake(0, 0, 50, 50);
 //    self.navigationController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
-    //[[UIBarButtonItem alloc] initWithTitle:@"分享" style:UIBarButtonItemStylePlain target:self action:@selector(shareBtnPressed:)];
+//    [[UIBarButtonItem alloc] initWithTitle:@"分享" style:UIBarButtonItemStylePlain target:self action:@selector(shareBtnPressed:)];
 //    @[[[UIBarButtonItem alloc] initWithCustomView:backButton]];
+    
+    UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [rightButton setImage:[UIImage imageNamed:TUIKitResource(@"right_item")] forState:UIControlStateNormal];
+//    [rightButton setImage:[UIImage imageNamed:TUIKitResource(@"right_item")] forState:UIControlStateHighlighted];
+    [rightButton addTarget:self action:@selector(rightButtonClicked) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
 }
 
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+- (void)rightButtonClicked
 {
-    [super.view hitTest:point withEvent:event];
-//    UIView *retView = nil;
-//    NSLog(@"hitTest %@ Entry! event=%@", self.name, event);
+    UIAlertController *sheet = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    
+    
+    UIAlertAction *editButton = [UIAlertAction actionWithTitle:@"修改备注名" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        self.selectedBlock(0,nil);
+
+//        @weakify(self)
+//        TTextEditController *vc = [[TTextEditController alloc] initWithText:@"123"];
+//        vc.title = NSLocalizedString(@"ProfileEditAlia", nil); // @"修改备注";
+//        vc.textValue = @"123";
+//        [self.navigationController pushViewController:vc animated:YES];
 //
-//    retView = [super hitTest:point withEvent:event];
-//    NSLog(@"hitTest %@ Exit! view = %@", self.name, retView);
-//
-//    return retView;
+//        [[RACObserve(vc, textValue) skip:1] subscribeNext:^(NSString *value) {
+//            @strongify(self)
+//            NSLog(@"value");
+////            self.modified = YES;
+////            self.friendProfile.friendRemark = value;
+////            [[V2TIMManager sharedInstance] setFriendInfo:self.friendProfile succ:^{
+////                [self loadData];;
+////            } fail:nil];
+//        }];
+    }];
+    UIAlertAction *mainButton = [UIAlertAction actionWithTitle:@"主页" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        @weakify(self)
+        self.selectedBlock(1,self.conversationData.userID);
+    }];
+    UIAlertAction *muteButton = [UIAlertAction actionWithTitle:@"静音" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+    }];
+    UIAlertAction *blackButton = [UIAlertAction actionWithTitle:@"黑名单" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
+        
+    }];
+    UIAlertAction *reportButton = [UIAlertAction actionWithTitle:@"举报" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
+        
+    }];
+    UIAlertAction *cancelButton = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+        
+    }];
+    [sheet addAction:editButton];
+     [sheet addAction:mainButton];
+     [sheet addAction:muteButton];
+     [sheet addAction:blackButton];
+     [sheet addAction:reportButton];
+    [sheet addAction:cancelButton];
+     
+     [self presentViewController:sheet animated:YES completion:^{
+         
+     }];
 }
+
+
 
 - (void)back:(UIButton *)button
 {
-    [self.parentViewController.navigationController popViewControllerAnimated:YES];
+//    [self.parentViewController.navigationController popViewControllerAnimated:YES];
     //    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+    UIViewController *vc = [[UIViewController alloc] init];
+    [self.navigationController pushViewController:vc animated:YES];
+    
+    [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated {

@@ -19,6 +19,8 @@
 
 @class TUIChatController;
 
+typedef void(^SelectedBlock)(NSInteger, NSString *);
+
 
 /////////////////////////////////////////////////////////////////////////////////
 //
@@ -167,6 +169,8 @@
 //********************************
 @property TUnReadView *unRead;
 //********************************
+
+@property (copy,nonatomic) SelectedBlock selectedBlock;
 
 /**
  *  TUIKit 聊天消息控制器
