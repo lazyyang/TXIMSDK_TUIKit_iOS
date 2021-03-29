@@ -31,6 +31,10 @@
 #import "NSBundle+TUIKIT.h"
 #import <SDWebImage/SDWebImage.h>
 #import "TTextEditController.h"
+#import "ZYCustomOneCellData.h"
+#import "ZYCustomOneTableViewCell.h"
+#import "ZYCustomeTwoCellData.h"
+#import "ZYCustomTwoTableViewCell.h"
 
 @interface TUIChatController () <TMessageControllerDelegate, TInputControllerDelegate, UIImagePickerControllerDelegate, UIDocumentPickerDelegate, UINavigationControllerDelegate>
 @property (nonatomic, strong) TUIConversationCellData *conversationData;
@@ -73,6 +77,55 @@
         self.atUserList = [NSMutableArray array];
     }
     return self;
+}
+
+- (NSDictionary *)jsonData2Dictionary:(NSData *)jsonData
+{
+    if (jsonData == nil) {
+        return nil;
+    }
+    NSError *err = nil;
+    NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:&err];
+    if (err || ![dic isKindOfClass:[NSDictionary class]]) {
+        NSLog(@"Json parse failed");
+        return nil;
+    }
+    return dic;
+}
+
+// TChatController 回调函数
+- (TUIMessageCellData *)chatController:(TUIChatController *)controller onNewMessage:(V2TIMMessage *)msg
+{
+  if (msg.elemType == V2TIM_ELEM_TYPE_CUSTOM) {
+      NSDictionary *dic = [self jsonData2Dictionary:[msg customElem].data];
+      if ([dic[@"type"] intValue] == 1) {//分享的作品
+          ZYCustomOneCellData *cellData = [[ZYCustomOneCellData alloc] initWithDirection:msg.isSelf ? MsgDirectionOutgoing : MsgDirectionIncoming];
+          cellData.cover = dic[@"cover"];
+          cellData.head_url = dic[@"head_url"];
+          cellData.nickName = dic[@"nickname"];
+          return cellData;
+      } else if([dic[@"type"] intValue] == 2){//分享的名片
+          ZYCustomeTwoCellData *cellData = [[ZYCustomeTwoCellData alloc] initWithDirection:msg.isSelf ? MsgDirectionOutgoing : MsgDirectionIncoming];
+//          cellData.cover = dic[@"cover"];
+//          cellData.head_url = dic[@"head_url"];
+//          cellData.nickName = dic[@"nickname"];
+          return cellData;
+      }
+  }
+  return nil;
+}
+- (TUIMessageCell *)chatController:(TUIChatController *)controller onShowMessageData:(TUIMessageCellData *)data
+{
+  if ([data isKindOfClass:[ZYCustomOneCellData class]]) {
+      ZYCustomOneTableViewCell *myCell = [[ZYCustomOneTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"CustomOneCell"];
+      [myCell fillWithData:(ZYCustomOneCellData *)data];
+      return myCell;
+  } else if ([data isKindOfClass:[ZYCustomeTwoCellData class]]){
+      ZYCustomTwoTableViewCell *myCell = [[ZYCustomTwoTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"CustomTwoCell"];
+      [myCell fillWithData:(ZYCustomeTwoCellData *)data];
+      return myCell;
+  }
+  return nil;
 }
 
 - (void)viewDidLoad {
@@ -425,18 +478,18 @@
 
 - (TUIMessageCellData *)messageController:(TUIMessageController *)controller onNewMessage:(V2TIMMessage *)data
 {
-    if ([self.delegate respondsToSelector:@selector(chatController:onNewMessage:)]) {
-        return [self.delegate chatController:self onNewMessage:data];
-    }
-    return nil;
+//    if ([self.delegate respondsToSelector:@selector(chatController:onNewMessage:)]) {
+        return [self chatController:self onNewMessage:data];
+//    }
+//    return nil;
 }
 
 - (TUIMessageCell *)messageController:(TUIMessageController *)controller onShowMessageData:(TUIMessageCellData *)data
 {
-    if ([self.delegate respondsToSelector:@selector(chatController:onShowMessageData:)]) {
-        return [self.delegate chatController:self onShowMessageData:data];
-    }
-    return nil;
+//    if ([self.delegate respondsToSelector:@selector(chatController:onShowMessageData:)]) {
+        return [self chatController:self onShowMessageData:data];
+//    }
+//    return nil;
 }
 
 - (void)messageController:(TUIMessageController *)controller onSelectMessageAvatar:(TUIMessageCell *)cell
