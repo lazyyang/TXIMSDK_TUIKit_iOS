@@ -131,28 +131,27 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setupViews];
-//    self.navigationController.navigationItem.leftBarButtonItem = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    self.navigationController.navigationItem.title = self.conversationData.title;
-//    self.navigationController.navigationItem.hidesBackButton = YES;
-//    UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//    [backButton setImage:[UIImage imageNamed:TUIKitResource(@"keyboard_arrow_left - material")] forState:UIControlStateNormal];
-//    [backButton setImage:[UIImage imageNamed:TUIKitResource(@"keyboard_arrow_left - material")] forState:UIControlStateHighlighted];
-//    [backButton addTarget:self action:@selector(back:) forControlEvents:UIControlEventTouchUpInside];
-////    backButton.frame = CGRectMake(0, 0, 50, 50);
-//    self.navigationController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
-//    [[UIBarButtonItem alloc] initWithTitle:@"分享" style:UIBarButtonItemStylePlain target:self action:@selector(shareBtnPressed:)];
-//    @[[[UIBarButtonItem alloc] initWithCustomView:backButton]];
-    
-    UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [rightButton setImage:[UIImage imageNamed:TUIKitResource(@"right_item")] forState:UIControlStateNormal];
-//    [rightButton setImage:[UIImage imageNamed:TUIKitResource(@"right_item")] forState:UIControlStateHighlighted];
-    [rightButton addTarget:self action:@selector(rightButtonClicked) forControlEvents:UIControlEventTouchUpInside];
-    self.navigationController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
+    if (! @available(iOS 14.0, *)) {
+        self.navigationController.navigationItem.title = self.conversationData.title;
+        self.navigationController.navigationItem.hidesBackButton = YES;
+        UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [backButton setImage:[UIImage imageNamed:TUIKitResource(@"keyboard_arrow_left - material")] forState:UIControlStateNormal];
+        [backButton setImage:[UIImage imageNamed:TUIKitResource(@"keyboard_arrow_left - material")] forState:UIControlStateHighlighted];
+        [backButton addTarget:self action:@selector(back:) forControlEvents:UIControlEventTouchUpInside];
+        self.navigationController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
+    }
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [rightButton setImage:[UIImage imageNamed:TUIKitResource(@"right_item")] forState:UIControlStateNormal];
+        [rightButton addTarget:self action:@selector(rightButtonClicked) forControlEvents:UIControlEventTouchUpInside];
+        self.navigationController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
+    });
+
 }
 
 - (void)rightButtonClicked
@@ -262,7 +261,16 @@
     [self addChildViewController:_inputController];
     [self.view addSubview:_inputController.view];
     _inputController.inputBar.inputTextView.text = self.conversationData.draftText;
-    [_inputController.inputBar.headImageView sd_setImageWithURL:[NSURL URLWithString:self.conversationData.faceUrl] placeholderImage:[UIImage imageNamed:TUIKitResource(@"default_c2c_head")]];
+    NSString *loginUser = [[V2TIMManager sharedInstance] getLoginUser];
+    if (loginUser.length > 0) {
+        @weakify(self)
+        [[V2TIMManager sharedInstance] getUsersInfo:@[loginUser] succ:^(NSArray<V2TIMUserFullInfo *> *infoList) {
+            @strongify(self)
+//            self.profile = infoList.firstObject;
+            [self.inputController.inputBar.headImageView sd_setImageWithURL:[NSURL URLWithString:infoList.firstObject.faceURL] placeholderImage:[UIImage imageNamed:TUIKitResource(@"default_c2c_head")]];
+
+        } fail:nil];
+    }
     self.tipsView = [[UIView alloc] initWithFrame:CGRectZero];
     self.tipsView.backgroundColor = RGB(246, 234, 190);
     [self.view addSubview:self.tipsView];
