@@ -132,7 +132,13 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setupViews];
-//    self.navigationController.navigationItem.leftBarButtonItem = nil;
+    @weakify(self)
+    [[V2TIMManager sharedInstance] getFriendsInfo:@[_conversationData.userID] succ:^(NSArray<V2TIMFriendInfoResult *> *resultList) {
+        V2TIMFriendInfoResult *result = resultList.firstObject;
+        NSString *mute = [[NSString alloc] initWithData:result.friendInfo.friendCustomInfo[@"Mute"] encoding:NSUTF8StringEncoding];
+        self.mute = mute;
+        NSLog(@"mute = %@",mute);
+    } fail:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -181,13 +187,30 @@
         [self updateRightButtonItem];
         self.selectedBlock(1,self.conversationData.userID);
     }];
-    UIAlertAction *muteButton = [UIAlertAction actionWithTitle:@"静音" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        [self updateRightButtonItem];
-        self.selectedBlock(2,self.conversationData.userID);
-    }];
+    UIAlertAction *muteButton;
+    if ([self.mute isEqualToString:@"1"]) {//表示处于静音状态
+        muteButton = [UIAlertAction actionWithTitle:@"取消静音" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [self updateRightButtonItem];
+            self.selectedBlock(7,self.conversationData.userID);
+        }];
+    } else{
+        muteButton = [UIAlertAction actionWithTitle:@"静音" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [self updateRightButtonItem];
+            self.selectedBlock(2,self.conversationData.userID);
+        }];
+    }
     UIAlertAction *blackButton = [UIAlertAction actionWithTitle:@"黑名单" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
-        [self updateRightButtonItem];
-        self.selectedBlock(3,self.conversationData.userID);
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"拉入黑名单同时会删除聊天记录" message:nil preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [[V2TIMManager sharedInstance] addToBlackList:@[self.conversationData.userID] succ:nil fail:nil];
+            [self updateRightButtonItem];
+            self.selectedBlock(3,self.conversationData.conversationID);
+        }];
+        [alertController addAction:okAction];
+        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+        }];
+        [alertController addAction:okAction];
+        [self presentViewController:alertController animated:YES completion:nil];
     }];
     UIAlertAction *reportButton = [UIAlertAction actionWithTitle:@"举报" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
         [self updateRightButtonItem];

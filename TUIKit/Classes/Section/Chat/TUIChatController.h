@@ -198,6 +198,12 @@ typedef void(^SelectedBlock)(NSInteger, NSString *);
  */
 @property NSArray<TUIInputMoreCellData *> *moreMenus;
 
+
+/**
+ *  静音状态，1表示静音了，0表示未静音
+ */
+@property (nonatomic, strong) NSString *mute;
+
 /**
  *  初始化函数。
  *  根据所选会话初始化当前界面。
@@ -247,5 +253,6 @@ typedef void(^SelectedBlock)(NSInteger, NSString *);
  *  需要注意的是，目前版本仅能保存未发送的文本消息作为草稿。
  */
 - (void)saveDraft;
+
 
 @end
