@@ -66,7 +66,7 @@
   [self.headImageView sd_setImageWithURL:[NSURL URLWithString:data.head_url] placeholderImage:[UIImage imageNamed:TUIKitResource(@"default_c2c_head")] completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
             
   }];
-  self.nickLabel.text = [NSString stringWithFormat:@"%@（个人昵称）",data.nickName];
+  self.nickLabel.text = [NSString stringWithFormat:@"%@",data.nickName];
 }
 - (void)layoutSubviews
 {

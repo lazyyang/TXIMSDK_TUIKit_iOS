@@ -17,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) NSString *nickName;
 
+@property (nonatomic, strong) NSString *bind_id;
+
 @end
 
 NS_ASSUME_NONNULL_END

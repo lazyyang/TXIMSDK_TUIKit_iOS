@@ -103,6 +103,7 @@
           cellData.cover = dic[@"cover"];
           cellData.head_url = dic[@"head_url"];
           cellData.nickName = dic[@"nickname"];
+          cellData.bind_id = [NSString stringWithFormat:@"%@",dic[@"bind_id"]];
           return cellData;
       } else if([dic[@"type"] intValue] == 2){//分享的名片
           ZYCustomeTwoCellData *cellData = [[ZYCustomeTwoCellData alloc] initWithDirection:msg.isSelf ? MsgDirectionOutgoing : MsgDirectionIncoming];
@@ -131,6 +132,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setupViews];
+//    self.navigationController.navigationItem.leftBarButtonItem = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -142,7 +144,7 @@
         UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [backButton setImage:[UIImage imageNamed:TUIKitResource(@"keyboard_arrow_left - material")] forState:UIControlStateNormal];
         [backButton setImage:[UIImage imageNamed:TUIKitResource(@"keyboard_arrow_left - material")] forState:UIControlStateHighlighted];
-        [backButton addTarget:self action:@selector(back:) forControlEvents:UIControlEventTouchUpInside];
+       [backButton addTarget:self action:@selector(back:) forControlEvents:UIControlEventTouchUpInside];
         self.navigationController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
     }
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -152,6 +154,17 @@
         self.navigationController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
     });
 
+   self.navigationController.navigationItem.title = self.conversationData.title;
+}
+
+
+- (void)updateRightButtonItem
+{
+    UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [rightButton setImage:[UIImage imageNamed:TUIKitResource(@"right_item")] forState:UIControlStateNormal];
+    [rightButton setImage:[UIImage imageNamed:TUIKitResource(@"right_item")] forState:UIControlStateHighlighted];
+    [rightButton addTarget:self action:@selector(rightButtonClicked) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
 }
 
 - (void)rightButtonClicked
@@ -160,39 +173,28 @@
     
     
     UIAlertAction *editButton = [UIAlertAction actionWithTitle:@"修改备注名" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self updateRightButtonItem];
         self.selectedBlock(0,nil);
-
-//        @weakify(self)
-//        TTextEditController *vc = [[TTextEditController alloc] initWithText:@"123"];
-//        vc.title = NSLocalizedString(@"ProfileEditAlia", nil); // @"修改备注";
-//        vc.textValue = @"123";
-//        [self.navigationController pushViewController:vc animated:YES];
-//
-//        [[RACObserve(vc, textValue) skip:1] subscribeNext:^(NSString *value) {
-//            @strongify(self)
-//            NSLog(@"value");
-////            self.modified = YES;
-////            self.friendProfile.friendRemark = value;
-////            [[V2TIMManager sharedInstance] setFriendInfo:self.friendProfile succ:^{
-////                [self loadData];;
-////            } fail:nil];
-//        }];
     }];
     UIAlertAction *mainButton = [UIAlertAction actionWithTitle:@"主页" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         @weakify(self)
+        [self updateRightButtonItem];
         self.selectedBlock(1,self.conversationData.userID);
     }];
     UIAlertAction *muteButton = [UIAlertAction actionWithTitle:@"静音" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        
+        [self updateRightButtonItem];
+        self.selectedBlock(2,self.conversationData.userID);
     }];
     UIAlertAction *blackButton = [UIAlertAction actionWithTitle:@"黑名单" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
-        
+        [self updateRightButtonItem];
+        self.selectedBlock(3,self.conversationData.userID);
     }];
     UIAlertAction *reportButton = [UIAlertAction actionWithTitle:@"举报" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
-        
+        [self updateRightButtonItem];
+        self.selectedBlock(4,self.conversationData.userID);
     }];
     UIAlertAction *cancelButton = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-        
+        [self updateRightButtonItem];
     }];
     [sheet addAction:editButton];
      [sheet addAction:mainButton];
@@ -205,8 +207,6 @@
          
      }];
 }
-
-
 
 - (void)back:(UIButton *)button
 {
@@ -261,16 +261,7 @@
     [self addChildViewController:_inputController];
     [self.view addSubview:_inputController.view];
     _inputController.inputBar.inputTextView.text = self.conversationData.draftText;
-    NSString *loginUser = [[V2TIMManager sharedInstance] getLoginUser];
-    if (loginUser.length > 0) {
-        @weakify(self)
-        [[V2TIMManager sharedInstance] getUsersInfo:@[loginUser] succ:^(NSArray<V2TIMUserFullInfo *> *infoList) {
-            @strongify(self)
-//            self.profile = infoList.firstObject;
-            [self.inputController.inputBar.headImageView sd_setImageWithURL:[NSURL URLWithString:infoList.firstObject.faceURL] placeholderImage:[UIImage imageNamed:TUIKitResource(@"default_c2c_head")]];
-
-        } fail:nil];
-    }
+    [_inputController.inputBar.headImageView sd_setImageWithURL:[NSURL URLWithString:self.conversationData.faceUrl] placeholderImage:[UIImage imageNamed:TUIKitResource(@"default_c2c_head")]];
     self.tipsView = [[UIView alloc] initWithFrame:CGRectZero];
     self.tipsView.backgroundColor = RGB(246, 234, 190);
     [self.view addSubview:self.tipsView];
@@ -559,6 +550,11 @@
             @"groupID": _conversationData.groupID?:@"",
             @"msgSender": self,
         }];
+    } else if ([cell isKindOfClass:[ZYCustomOneTableViewCell class]]){ //作品
+        ZYCustomOneCellData *data = [(TUIGroupLiveMessageCell *)cell customData];
+        self.selectedBlock(5, data.bind_id);
+    } else if ([cell isKindOfClass:[ZYCustomTwoTableViewCell class]]){ //名片
+        self.selectedBlock(6, nil);
     }
 }
 
