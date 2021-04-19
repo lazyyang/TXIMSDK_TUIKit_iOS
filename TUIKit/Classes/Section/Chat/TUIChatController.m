@@ -209,7 +209,7 @@
         [alertController addAction:okAction];
         UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
         }];
-        [alertController addAction:okAction];
+        [alertController addAction:cancelAction];
         [self presentViewController:alertController animated:YES completion:nil];
     }];
     UIAlertAction *reportButton = [UIAlertAction actionWithTitle:@"举报" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
