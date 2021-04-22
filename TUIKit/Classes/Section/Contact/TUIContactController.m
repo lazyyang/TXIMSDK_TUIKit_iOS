@@ -57,30 +57,9 @@
         NSArray *list = self.viewModel.dataDict[group];
         [mulArray addObjectsFromArray:list];
     }
-//    NSString *group = self.viewModel.groupList[0];
-//    NSArray *list = self.viewModel.dataDict[group];
-//    NSLog(@"%@",list);
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"title CONTAINS  %@", searchText];
     self.searchArray = [mulArray filteredArrayUsingPredicate:predicate];
     [self.tableView reloadData];
-
-//    [self.filteredDataSource.allGroups removeAllObjects];
-//    NSString *searchText = [searchController.searchBar text];
-//    NSMutableArray *arr = [[ContactManager shared] searchUsersByText:searchText listType:0];
-//    if ([arr count] > 0) {
-//        PFGroupData *theGroup = [self.filteredDataSource addGroupWithType:1 title:@"联系人"];
-//        for (UserModel *user in arr) {
-//            [theGroup addCell:[PFCellData cellWithModel:user] cellType:CONTACT_TABLE_VIEW_CELL_TYPE_CONTACT height:0];
-//        }
-//    }
-//    NSMutableArray *arrDept= [[ContactManager shared] searchDeptsByText:searchText listType:0];
-//    if ([arrDept count] > 0) {
-//        PFGroupData *theGroupDept = [self.filteredDataSource addGroupWithType:0 title:@"部门"];
-//        for (DeptModel *dept in arrDept) {
-//            [theGroupDept addCell:[PFCellData cellWithModel:dept] cellType:CONTACT_TABLE_VIEW_CELL_TYPE_DEPT height:0];
-//        }
-//    }
-//    [self.tableView reloadData];
 }
 
 //根据颜色来绘制背景图片
@@ -213,7 +192,8 @@
             UILabel *textLabel = [[UILabel alloc] initWithFrame:CGRectZero];
             textLabel.tag = TEXT_TAG;
             textLabel.font = [UIFont systemFontOfSize:16];
-            textLabel.textColor = RGB(0xe9, 0x48, 0x48);
+            textLabel.textColor = [UIColor blackColor];
+            //RGB(0xe9, 0x48, 0x48);
             [headerView addSubview:textLabel];
             textLabel.mm_fill().mm_left(12);
             textLabel.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;

@@ -139,6 +139,7 @@
         self.mute = mute;
         NSLog(@"mute = %@",mute);
     } fail:nil];
+
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -153,12 +154,11 @@
        [backButton addTarget:self action:@selector(back:) forControlEvents:UIControlEventTouchUpInside];
         self.navigationController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
     }
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [rightButton setImage:[UIImage imageNamed:TUIKitResource(@"right_item")] forState:UIControlStateNormal];
-        [rightButton addTarget:self action:@selector(rightButtonClicked) forControlEvents:UIControlEventTouchUpInside];
-        self.navigationController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
-    });
+
+    UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [rightButton setImage:[UIImage imageNamed:TUIKitResource(@"right_item")] forState:UIControlStateNormal];
+    [rightButton addTarget:self action:@selector(rightButtonClicked) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
 
    self.navigationController.navigationItem.title = self.conversationData.title;
 }
@@ -166,11 +166,13 @@
 
 - (void)updateRightButtonItem
 {
+    /*
     UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [rightButton setImage:[UIImage imageNamed:TUIKitResource(@"right_item")] forState:UIControlStateNormal];
     [rightButton setImage:[UIImage imageNamed:TUIKitResource(@"right_item")] forState:UIControlStateHighlighted];
     [rightButton addTarget:self action:@selector(rightButtonClicked) forControlEvents:UIControlEventTouchUpInside];
     self.navigationController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
+     */
 }
 
 - (void)rightButtonClicked
@@ -233,12 +235,7 @@
 
 - (void)back:(UIButton *)button
 {
-//    [self.parentViewController.navigationController popViewControllerAnimated:YES];
-    //    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
-    UIViewController *vc = [[UIViewController alloc] init];
-    [self.navigationController pushViewController:vc animated:YES];
-    
-    [self.navigationController popToRootViewControllerAnimated:YES];
+    self.selectedBlock(8, @"");
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -249,6 +246,7 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     self.responseKeyboard = NO;
+    self.navigationController.navigationItem.rightBarButtonItem = nil;
 }
 
 - (void)willMoveToParentViewController:(UIViewController *)parent
