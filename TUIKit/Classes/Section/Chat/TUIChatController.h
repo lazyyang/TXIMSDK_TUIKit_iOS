@@ -172,6 +172,8 @@ typedef void(^SelectedBlock)(NSInteger, NSString *);
 
 @property (copy,nonatomic) SelectedBlock selectedBlock;
 
+@property (assign, nonatomic) BOOL isFromUIKit;
+
 /**
  *  TUIKit 聊天消息控制器
  *  负责消息气泡的展示，同时负责响应用户对于消息气泡的交互，比如：点击消息发送者头像、轻点消息、长按消息等操作。

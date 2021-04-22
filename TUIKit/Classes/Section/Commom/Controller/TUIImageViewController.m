@@ -11,6 +11,7 @@
 #import "TScrollView.h"
 #import "MMLayout/UIView+MMLayout.h"
 #import "NSBundle+TUIKIT.h"
+#import "THeader.h"
 
 @interface TUIImageViewController () <UIScrollViewDelegate>
 @property (nonatomic, strong) UIImageView *imageView;
@@ -25,9 +26,20 @@
 
 @implementation TUIImageViewController
 
+- (void)back:(UIButton *)button
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
 
+    UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [backButton setImage:[UIImage imageNamed:TUIKitResource(@"keyboard_arrow_left - material")] forState:UIControlStateNormal];
+    [backButton setImage:[UIImage imageNamed:TUIKitResource(@"keyboard_arrow_left - material")] forState:UIControlStateHighlighted];
+   [backButton addTarget:self action:@selector(back:) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
+    
     self.saveBackgroundImage = [self.navigationController.navigationBar backgroundImageForBarMetrics:UIBarMetricsDefault];
     self.saveShadowImage = self.navigationController.navigationBar.shadowImage;
 

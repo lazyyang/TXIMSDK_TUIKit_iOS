@@ -139,28 +139,48 @@
         self.mute = mute;
         NSLog(@"mute = %@",mute);
     } fail:nil];
-
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    if (! @available(iOS 14.0, *)) {
+    
+//    self.navigationItem.title = self.conversationData.title;
+//    self.navigationItem.hidesBackButton = YES;
+//    UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//    [backButton setImage:[UIImage imageNamed:TUIKitResource(@"keyboard_arrow_left - material")] forState:UIControlStateNormal];
+//    [backButton setImage:[UIImage imageNamed:TUIKitResource(@"keyboard_arrow_left - material")] forState:UIControlStateHighlighted];
+//   [backButton addTarget:self action:@selector(back:) forControlEvents:UIControlEventTouchUpInside];
+//    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
+    if(self.isFromUIKit == YES){
         self.navigationController.navigationItem.title = self.conversationData.title;
-        self.navigationController.navigationItem.hidesBackButton = YES;
         UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [backButton setImage:[UIImage imageNamed:TUIKitResource(@"keyboard_arrow_left - material")] forState:UIControlStateNormal];
         [backButton setImage:[UIImage imageNamed:TUIKitResource(@"keyboard_arrow_left - material")] forState:UIControlStateHighlighted];
        [backButton addTarget:self action:@selector(back:) forControlEvents:UIControlEventTouchUpInside];
-        self.navigationController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
+        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
+        
+//        UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//        [rightButton setImage:[UIImage imageNamed:TUIKitResource(@"right_item")] forState:UIControlStateNormal];
+//        [rightButton addTarget:self action:@selector(rightButtonClicked) forControlEvents:UIControlEventTouchUpInside];
+//        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
+//        self.navigationItem.title = self.conversationData.title;
+    } else{
+        if (! @available(iOS 14.0, *)) {
+            self.navigationItem.hidesBackButton = YES;
+            UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+            [backButton setImage:[UIImage imageNamed:TUIKitResource(@"keyboard_arrow_left - material")] forState:UIControlStateNormal];
+            [backButton setImage:[UIImage imageNamed:TUIKitResource(@"keyboard_arrow_left - material")] forState:UIControlStateHighlighted];
+           [backButton addTarget:self action:@selector(back:) forControlEvents:UIControlEventTouchUpInside];
+            self.navigationController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
+        }
+
+        UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [rightButton setImage:[UIImage imageNamed:TUIKitResource(@"right_item")] forState:UIControlStateNormal];
+        [rightButton addTarget:self action:@selector(rightButtonClicked) forControlEvents:UIControlEventTouchUpInside];
+        self.navigationController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
+        self.navigationController.navigationItem.title = self.conversationData.title;
     }
-
-    UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [rightButton setImage:[UIImage imageNamed:TUIKitResource(@"right_item")] forState:UIControlStateNormal];
-    [rightButton addTarget:self action:@selector(rightButtonClicked) forControlEvents:UIControlEventTouchUpInside];
-    self.navigationController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
-
-   self.navigationController.navigationItem.title = self.conversationData.title;
 }
 
 
@@ -235,7 +255,11 @@
 
 - (void)back:(UIButton *)button
 {
-    self.selectedBlock(8, @"");
+    if (self.isFromUIKit == YES) {
+        [self.navigationController popViewControllerAnimated:YES];
+    } else{
+        self.selectedBlock(8, @"");
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {

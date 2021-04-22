@@ -22,7 +22,7 @@
 #import "TUIContactActionCell.h"
 #import "UIColor+TUIDarkMode.h"
 #import "NSBundle+TUIKIT.h"
-
+@import SwiftUI;
 @import ImSDK;
 
 #define kContactCellReuseId @"ContactCellReuseId"
@@ -247,6 +247,29 @@
 
 }
 
+//封装原presentViewController:animated:completion:接口
+- (void)presentViewController:(UIViewController *)viewControllerToPresent
+                     animated:(BOOL)animated
+                   completion:(void (^)(void))completion
+                    pushStyle:(BOOL)isPushStyle {
+    
+    if (animated && isPushStyle) {
+        viewControllerToPresent.transitioningDelegate = self;
+        
+        //添加自定义的返回手势
+        UIScreenEdgePanGestureRecognizer *screenGesture = [[UIScreenEdgePanGestureRecognizer alloc] initWithTarget:self
+                                                                                                            action:@selector(onPanGesture:)];
+        screenGesture.delegate = self;
+        screenGesture.edges = UIRectEdgeLeft;
+        [viewControllerToPresent.view addGestureRecognizer:screenGesture];
+        if ([viewControllerToPresent isKindOfClass:[UINavigationController class]]) {
+            [screenGesture requireGestureRecognizerToFail:((UINavigationController*)viewControllerToPresent).interactivePopGestureRecognizer];
+        }
+    }
+    
+    [self presentViewController:viewControllerToPresent animated:animated completion:completion];
+}
+
 
 - (void)onSelectFriend:(TCommonContactCell *)cell
 {
@@ -254,14 +277,15 @@
     data.userID = cell.contactData.friendProfile.userID;
     TUIChatController *chat = [[TUIChatController alloc] initWithConversation:data];
     chat.title = cell.contactData.friendProfile.userFullInfo.nickName;
+    chat.isFromUIKit = YES;
     [self.navigationController pushViewController:chat animated:YES];
 }
 
 - (void)conversationListController:(TUIConversationListController *)conversationController didSelectConversation:(TUIConversationCell *)conversation;
-{
-    TUIChatController *chat = [[TUIChatController alloc] initWithConversation:conversation.convData];
-    chat.title = conversation.convData.title;
-    [self.navigationController pushViewController:chat animated:YES];
+{    
+//    TUIChatController *chat = [[TUIChatController alloc] initWithConversation:conversation.convData];
+//    chat.title = conversation.convData.title;
+//    [self.navigationController pushViewController:chat animated:YES];
 }
 
 
