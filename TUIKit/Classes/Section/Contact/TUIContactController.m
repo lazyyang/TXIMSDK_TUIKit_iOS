@@ -275,17 +275,22 @@
 {
     TUIConversationCellData *data = [[TUIConversationCellData alloc] init];
     data.userID = cell.contactData.friendProfile.userID;
+    self.selectedBlock(1, data,cell.contactData.friendProfile.userFullInfo.nickName);
+/*
     TUIChatController *chat = [[TUIChatController alloc] initWithConversation:data];
     chat.title = cell.contactData.friendProfile.userFullInfo.nickName;
     chat.isFromUIKit = YES;
     [self.navigationController pushViewController:chat animated:YES];
+ */
 }
 
 - (void)conversationListController:(TUIConversationListController *)conversationController didSelectConversation:(TUIConversationCell *)conversation;
-{    
-//    TUIChatController *chat = [[TUIChatController alloc] initWithConversation:conversation.convData];
-//    chat.title = conversation.convData.title;
-//    [self.navigationController pushViewController:chat animated:YES];
+{
+/*
+    TUIChatController *chat = [[TUIChatController alloc] initWithConversation:conversation.convData];
+    chat.title = conversation.convData.title;
+    [self.navigationController pushViewController:chat animated:YES];
+ */
 }
 
 

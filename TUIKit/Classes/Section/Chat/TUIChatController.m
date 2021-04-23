@@ -144,14 +144,14 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-//    self.navigationItem.title = self.conversationData.title;
-//    self.navigationItem.hidesBackButton = YES;
-//    UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//    [backButton setImage:[UIImage imageNamed:TUIKitResource(@"keyboard_arrow_left - material")] forState:UIControlStateNormal];
-//    [backButton setImage:[UIImage imageNamed:TUIKitResource(@"keyboard_arrow_left - material")] forState:UIControlStateHighlighted];
-//   [backButton addTarget:self action:@selector(back:) forControlEvents:UIControlEventTouchUpInside];
-//    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
+    self.navigationController.navigationItem.hidesBackButton = YES;
+    self.navigationItem.hidesBackButton = YES;
+    UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [rightButton setImage:[UIImage imageNamed:TUIKitResource(@"right_item")] forState:UIControlStateNormal];
+    [rightButton addTarget:self action:@selector(rightButtonClicked) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
+    self.navigationController.navigationItem.title = self.conversationData.title;
+/*
     if(self.isFromUIKit == YES){
         self.navigationController.navigationItem.title = self.conversationData.title;
         UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -159,12 +159,6 @@
         [backButton setImage:[UIImage imageNamed:TUIKitResource(@"keyboard_arrow_left - material")] forState:UIControlStateHighlighted];
        [backButton addTarget:self action:@selector(back:) forControlEvents:UIControlEventTouchUpInside];
         self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
-        
-//        UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//        [rightButton setImage:[UIImage imageNamed:TUIKitResource(@"right_item")] forState:UIControlStateNormal];
-//        [rightButton addTarget:self action:@selector(rightButtonClicked) forControlEvents:UIControlEventTouchUpInside];
-//        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
-//        self.navigationItem.title = self.conversationData.title;
     } else{
         if (! @available(iOS 14.0, *)) {
             self.navigationItem.hidesBackButton = YES;
@@ -174,25 +168,8 @@
            [backButton addTarget:self action:@selector(back:) forControlEvents:UIControlEventTouchUpInside];
             self.navigationController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
         }
-
-        UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [rightButton setImage:[UIImage imageNamed:TUIKitResource(@"right_item")] forState:UIControlStateNormal];
-        [rightButton addTarget:self action:@selector(rightButtonClicked) forControlEvents:UIControlEventTouchUpInside];
-        self.navigationController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
-        self.navigationController.navigationItem.title = self.conversationData.title;
     }
-}
-
-
-- (void)updateRightButtonItem
-{
-    /*
-    UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [rightButton setImage:[UIImage imageNamed:TUIKitResource(@"right_item")] forState:UIControlStateNormal];
-    [rightButton setImage:[UIImage imageNamed:TUIKitResource(@"right_item")] forState:UIControlStateHighlighted];
-    [rightButton addTarget:self action:@selector(rightButtonClicked) forControlEvents:UIControlEventTouchUpInside];
-    self.navigationController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
-     */
+ */
 }
 
 - (void)rightButtonClicked
@@ -201,31 +178,30 @@
     
     
     UIAlertAction *editButton = [UIAlertAction actionWithTitle:@"修改备注名" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        [self updateRightButtonItem];
+        @weakify(self)
         self.selectedBlock(0,nil);
     }];
     UIAlertAction *mainButton = [UIAlertAction actionWithTitle:@"主页" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         @weakify(self)
-        [self updateRightButtonItem];
         self.selectedBlock(1,self.conversationData.userID);
     }];
     UIAlertAction *muteButton;
     if ([self.mute isEqualToString:@"1"]) {//表示处于静音状态
         muteButton = [UIAlertAction actionWithTitle:@"取消静音" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            [self updateRightButtonItem];
+            @weakify(self)
             self.selectedBlock(7,self.conversationData.userID);
         }];
     } else{
         muteButton = [UIAlertAction actionWithTitle:@"静音" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            [self updateRightButtonItem];
+            @weakify(self)
             self.selectedBlock(2,self.conversationData.userID);
         }];
     }
     UIAlertAction *blackButton = [UIAlertAction actionWithTitle:@"黑名单" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"拉入黑名单同时会删除聊天记录" message:nil preferredStyle:UIAlertControllerStyleAlert];
         UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"确认" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            @weakify(self)
             [[V2TIMManager sharedInstance] addToBlackList:@[self.conversationData.userID] succ:nil fail:nil];
-            [self updateRightButtonItem];
             self.selectedBlock(3,self.conversationData.conversationID);
         }];
         [alertController addAction:okAction];
@@ -235,31 +211,34 @@
         [self presentViewController:alertController animated:YES completion:nil];
     }];
     UIAlertAction *reportButton = [UIAlertAction actionWithTitle:@"举报" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
-        [self updateRightButtonItem];
+        @weakify(self)
         self.selectedBlock(4,self.conversationData.userID);
     }];
     UIAlertAction *cancelButton = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-        [self updateRightButtonItem];
+
     }];
     [sheet addAction:editButton];
-     [sheet addAction:mainButton];
-     [sheet addAction:muteButton];
-     [sheet addAction:blackButton];
-     [sheet addAction:reportButton];
+    [sheet addAction:mainButton];
+    [sheet addAction:muteButton];
+    [sheet addAction:blackButton];
+    [sheet addAction:reportButton];
     [sheet addAction:cancelButton];
      
-     [self presentViewController:sheet animated:YES completion:^{
+    [self presentViewController:sheet animated:YES completion:^{
          
-     }];
+    }];
 }
 
 - (void)back:(UIButton *)button
 {
+    self.selectedBlock(8, @"");
+/*
     if (self.isFromUIKit == YES) {
         [self.navigationController popViewControllerAnimated:YES];
     } else{
         self.selectedBlock(8, @"");
     }
+ */
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -601,6 +580,7 @@
         }];
     } else if ([cell isKindOfClass:[ZYCustomOneTableViewCell class]]){ //作品
         ZYCustomOneCellData *data = [(TUIGroupLiveMessageCell *)cell customData];
+        
         self.selectedBlock(5, data.bind_id);
     } else if ([cell isKindOfClass:[ZYCustomTwoTableViewCell class]]){ //名片
         self.selectedBlock(6, nil);

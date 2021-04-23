@@ -10,6 +10,8 @@
 #import "TContactViewModel.h"
 #import "TUIChatController.h"
 
+typedef void(^ContactSelectedBlock)(NSInteger, TUIConversationCellData *,NSString *);
+
 NS_ASSUME_NONNULL_BEGIN
 
 /**
@@ -23,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface TUIContactController : UIViewController
 
-@property (copy,nonatomic) SelectedBlock selectedBlock;
+@property (copy,nonatomic) ContactSelectedBlock selectedBlock;
 
 /**
  *  消息列表界面的视图模型

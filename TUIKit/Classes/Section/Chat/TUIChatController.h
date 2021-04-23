@@ -172,7 +172,7 @@ typedef void(^SelectedBlock)(NSInteger, NSString *);
 
 @property (copy,nonatomic) SelectedBlock selectedBlock;
 
-@property (assign, nonatomic) BOOL isFromUIKit;
+//@property (assign, nonatomic) BOOL isFromUIKit;
 
 /**
  *  TUIKit 聊天消息控制器
