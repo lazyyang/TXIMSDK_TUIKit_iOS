@@ -53,7 +53,7 @@
     [self addSubview:_micButton];
 
     _faceButton = [[UIButton alloc] init];
-    _faceButton.hidden = YES;
+//    _faceButton.hidden = YES;
     [_faceButton addTarget:self action:@selector(clickFaceBtn:) forControlEvents:UIControlEventTouchUpInside];
     [_faceButton setImage:[UIImage tk_imageNamed:@"ToolViewEmotion"] forState:UIControlStateNormal];
     [_faceButton setImage:[UIImage tk_imageNamed:@"ToolViewEmotionHL"] forState:UIControlStateHighlighted];
@@ -113,12 +113,12 @@
     CGFloat buttonOriginY = (TTextView_Height - buttonSize.height) * 0.5;
     _micButton.frame = CGRectMake(TTextView_Margin, buttonOriginY, buttonSize.width, buttonSize.height);
     _keyboardButton.frame = _micButton.frame;
-    _moreButton.frame = CGRectMake(Screen_Width - buttonSize.width - TTextView_Margin - 10, buttonOriginY, buttonSize.width, buttonSize.height);
+    _moreButton.frame = CGRectMake(Screen_Width - buttonSize.width - TTextView_Margin, buttonOriginY, buttonSize.width, buttonSize.height);
     _faceButton.frame = CGRectMake(_moreButton.frame.origin.x - buttonSize.width - TTextView_Margin, buttonOriginY, buttonSize.width, buttonSize.height);
 
     CGFloat beginX = _micButton.frame.origin.x + _micButton.frame.size.width + TTextView_Margin;
     CGFloat endX = _faceButton.frame.origin.x - TTextView_Margin;
-    _recordButton.frame = CGRectMake(60, (TTextView_Height - TTextView_TextView_Height_Min) * 0.5, endX - beginX + 10, TTextView_TextView_Height_Min);
+    _recordButton.frame = CGRectMake(60, (TTextView_Height - TTextView_TextView_Height_Min) * 0.5, endX - beginX-20, TTextView_TextView_Height_Min);
     _inputTextView.frame = _recordButton.frame;
     
     _headImageView.center = CGPointMake(35.0f, _inputTextView.center.y);
@@ -158,8 +158,8 @@
     _recordButton.hidden = NO;
     _inputTextView.hidden = YES;
 //    _micButton.hidden = YES;
-//    _keyboardButton.hidden = NO;
-//    _faceButton.hidden = NO;
+    _keyboardButton.hidden = NO;
+    _faceButton.hidden = NO;
     [_inputTextView resignFirstResponder];
     [self layoutButton:TTextView_Height];
     if(_delegate && [_delegate respondsToSelector:@selector(inputBarDidTouchMore:)]){
@@ -171,10 +171,10 @@
 - (void)clickKeyboardBtn:(UIButton *)sender
 {
 //    _micButton.hidden = NO;
-//    _keyboardButton.hidden = YES;
+    _keyboardButton.hidden = YES;
     _recordButton.hidden = YES;
     _inputTextView.hidden = NO;
-//    _faceButton.hidden = NO;
+    _faceButton.hidden = NO;
     [self layoutButton:_inputTextView.frame.size.height + 2 * TTextView_Margin];
     if(_delegate && [_delegate respondsToSelector:@selector(inputBarDidTouchKeyboard:)]){
         [_delegate inputBarDidTouchKeyboard:self];
@@ -183,9 +183,9 @@
 
 - (void)clickFaceBtn:(UIButton *)sender
 {
-    _micButton.hidden = NO;
-//    _faceButton.hidden = YES;
-//    _keyboardButton.hidden = NO;
+//    _micButton.hidden = NO;
+    _faceButton.hidden = YES;
+    _keyboardButton.hidden = NO;
     _recordButton.hidden = YES;
     _inputTextView.hidden = NO;
     if(_delegate && [_delegate respondsToSelector:@selector(inputBarDidTouchFace:)]){
@@ -296,9 +296,9 @@
 
 - (void)textViewDidBeginEditing:(UITextView *)textView
 {
-//    self.keyboardButton.hidden = YES;
+    self.keyboardButton.hidden = YES;
 //    self.micButton.hidden = NO;
-//    self.faceButton.hidden = NO;
+    self.faceButton.hidden = NO;
 }
 
 - (void)textViewDidChange:(UITextView *)textView

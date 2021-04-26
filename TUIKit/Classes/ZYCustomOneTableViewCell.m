@@ -42,7 +42,7 @@
       _headImageView.clipsToBounds = YES;
       [self.container addSubview:_headImageView];
       
-      _nickLabel = [[UILabel alloc] initWithFrame:CGRectMake(70, 680.0f/2-60, 540.0f/2-80,50 )];
+      _nickLabel = [[UILabel alloc] initWithFrame:CGRectMake(70, 680.0f/2-65, 540.0f/2-80,50 )];
 //      _nickLabel.text = @"爱因斯坦（个人昵称）";
       _nickLabel.font = [UIFont boldSystemFontOfSize:16.0f];
       _nickLabel.textColor = [UIColor blackColor];

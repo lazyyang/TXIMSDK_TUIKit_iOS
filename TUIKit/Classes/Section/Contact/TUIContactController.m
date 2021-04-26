@@ -106,10 +106,11 @@
     _mysearchController.searchBar.backgroundImage = [self imageWithColor:[UIColor whiteColor] size:_mysearchController.searchBar.bounds.size];
     //搜索时，背景变暗色
     _mysearchController.dimsBackgroundDuringPresentation = NO;
-    
     // 添加 searchbar 到 headerview
     self.tableView.tableHeaderView = _mysearchController.searchBar;
-     
+    
+    [[UIBarButtonItem appearanceWhenContainedInInstancesOfClasses:@[[UISearchBar class]]] setTintColor:[UIColor blackColor]];
+             
     //cell无数据时，不显示间隔线
     UIView *v = [[UIView alloc] initWithFrame:CGRectZero];
     [_tableView setTableFooterView:v];

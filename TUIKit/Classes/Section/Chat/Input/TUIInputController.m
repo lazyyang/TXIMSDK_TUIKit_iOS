@@ -127,6 +127,7 @@ typedef NS_ENUM(NSUInteger, InputStatus) {
 
 - (void)showFaceAnimation
 {
+    self.inputBar.inputTextView.userInteractionEnabled = NO;
     [self.view addSubview:self.faceView];
     [self.view addSubview:self.menuView];
 
@@ -220,6 +221,7 @@ typedef NS_ENUM(NSUInteger, InputStatus) {
         return;
     }
     if(_status == Input_Status_Input_More){
+        [self reset];
         [self hideMoreAnimation];
     }
     [_inputBar.inputTextView resignFirstResponder];
@@ -233,9 +235,11 @@ typedef NS_ENUM(NSUInteger, InputStatus) {
 - (void)inputBarDidTouchKeyboard:(TUIInputBar *)textView
 {
     if(_status == Input_Status_Input_More){
+        [self reset];
         [self hideMoreAnimation];
     }
     if (_status == Input_Status_Input_Face) {
+        [self reset];
         [self hideFaceAnimation];
     }
     _status = Input_Status_Input_Keyboard;
