@@ -104,9 +104,11 @@
           cellData.head_url = dic[@"head_url"];
           cellData.nickName = dic[@"nickname"];
           cellData.bind_id = [NSString stringWithFormat:@"%@",dic[@"bind_id"]];
+          cellData.avatarUrl = msg.faceURL;
           return cellData;
       } else if([dic[@"type"] intValue] == 2){//分享的名片
           ZYCustomeTwoCellData *cellData = [[ZYCustomeTwoCellData alloc] initWithDirection:msg.isSelf ? MsgDirectionOutgoing : MsgDirectionIncoming];
+          cellData.avatarUrl = msg.faceURL;
 //          cellData.cover = dic[@"cover"];
 //          cellData.head_url = dic[@"head_url"];
 //          cellData.nickName = dic[@"nickname"];
@@ -144,13 +146,14 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    self.navigationController.navigationItem.hidesBackButton = YES;
-    self.navigationItem.hidesBackButton = YES;
+    self.parentViewController.navigationItem.hidesBackButton = YES;
     UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [rightButton setImage:[UIImage imageNamed:TUIKitResource(@"right_item")] forState:UIControlStateNormal];
     [rightButton addTarget:self action:@selector(rightButtonClicked) forControlEvents:UIControlEventTouchUpInside];
-    self.navigationController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
-    self.navigationController.navigationItem.title = self.conversationData.title;
+    self.parentViewController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
+    self.parentViewController.navigationItem.title = self.conversationData.title;
+    
+    
 /*
     if(self.isFromUIKit == YES){
         self.navigationController.navigationItem.title = self.conversationData.title;
@@ -179,7 +182,7 @@
     
     UIAlertAction *editButton = [UIAlertAction actionWithTitle:@"修改备注名" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         @weakify(self)
-        self.selectedBlock(0,nil);
+        self.selectedBlock(0,self.conversationData.userID);
     }];
     UIAlertAction *mainButton = [UIAlertAction actionWithTitle:@"主页" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         @weakify(self)
@@ -284,6 +287,7 @@
     }];
     [self addChildViewController:_inputController];
     [self.view addSubview:_inputController.view];
+//    _inputController.view.backgroundColor = [UIColor greenColor];
     _inputController.inputBar.inputTextView.text = self.conversationData.draftText;
     NSString *loginUser = [[V2TIMManager sharedInstance] getLoginUser];
     [[V2TIMManager sharedInstance] getUsersInfo:@[loginUser] succ:^(NSArray<V2TIMUserFullInfo *> *infoList) {

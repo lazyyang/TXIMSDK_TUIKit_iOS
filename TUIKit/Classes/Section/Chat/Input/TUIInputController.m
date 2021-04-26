@@ -69,6 +69,9 @@ typedef NS_ENUM(NSUInteger, InputStatus) {
     _inputBar = [[TUIInputBar alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, TTextView_Height)];
     _inputBar.delegate = self;
     [self.view addSubview:_inputBar];
+    
+    UITapGestureRecognizer *tapGes = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(reset)];
+    [self.inputBar addGestureRecognizer:tapGes];
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification
@@ -165,6 +168,7 @@ typedef NS_ENUM(NSUInteger, InputStatus) {
 
 - (void)showMoreAnimation
 {
+    self.inputBar.inputTextView.userInteractionEnabled = NO;
     [self.view addSubview:self.moreView];
 
     self.moreView.hidden = NO;
@@ -196,6 +200,7 @@ typedef NS_ENUM(NSUInteger, InputStatus) {
 - (void)inputBarDidTouchMore:(TUIInputBar *)textView
 {
     if(_status == Input_Status_Input_More){
+        [self reset];
         return;
     }
     if(_status == Input_Status_Input_Face){
@@ -293,6 +298,7 @@ typedef NS_ENUM(NSUInteger, InputStatus) {
 
 - (void)reset
 {
+    self.inputBar.inputTextView.userInteractionEnabled = YES;
     if(_status == Input_Status_Input){
         return;
     }

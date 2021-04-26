@@ -191,7 +191,7 @@
             headerView.backgroundColor = RGB(0xfa, 0xfa, 0xfa);
             UILabel *textLabel = [[UILabel alloc] initWithFrame:CGRectZero];
             textLabel.tag = TEXT_TAG;
-            textLabel.font = [UIFont systemFontOfSize:16];
+            textLabel.font = [UIFont systemFontOfSize:16 weight:UIFontWeightSemibold];
             textLabel.textColor = [UIColor blackColor];
             //RGB(0xe9, 0x48, 0x48);
             [headerView addSubview:textLabel];
@@ -276,6 +276,9 @@
     TUIConversationCellData *data = [[TUIConversationCellData alloc] init];
     data.userID = cell.contactData.friendProfile.userID;
     self.selectedBlock(1, data,cell.contactData.friendProfile.userFullInfo.nickName);
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        self.mysearchController.active = NO;
+    });
 /*
     TUIChatController *chat = [[TUIChatController alloc] initWithConversation:data];
     chat.title = cell.contactData.friendProfile.userFullInfo.nickName;

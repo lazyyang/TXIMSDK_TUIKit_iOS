@@ -88,13 +88,13 @@
     }];
 
 
-    if ([TUIKit sharedInstance].config.avatarType == TAvatarTypeRounded) {
+//    if ([TUIKit sharedInstance].config.avatarType == TAvatarTypeRounded) {
         self.avatarView.layer.masksToBounds = YES;
         self.avatarView.layer.cornerRadius = data.cellLayout.avatarSize.height / 2;
-    } else if ([TUIKit sharedInstance].config.avatarType == TAvatarTypeRadiusCorner) {
-        self.avatarView.layer.masksToBounds = YES;
-        self.avatarView.layer.cornerRadius = [TUIKit sharedInstance].config.avatarCornerRadius;
-    }
+//    } else if ([TUIKit sharedInstance].config.avatarType == TAvatarTypeRadiusCorner) {
+//        self.avatarView.layer.masksToBounds = YES;
+//        self.avatarView.layer.cornerRadius = [TUIKit sharedInstance].config.avatarCornerRadius;
+//    }
     
     //set data
     self.nameLabel.text = data.name;
@@ -155,7 +155,7 @@
         CGSize csize = [self.messageData contentSize];
         CGFloat ctop = cellLayout.messageInsets.top + _nameLabel.mm_h;
         self.container.mm_left(cellLayout.messageInsets.left+self.avatarView.mm_maxX)
-        .mm_top(ctop).mm_width(csize.width).mm_height(csize.height);
+        .mm_top(ctop).mm_width(csize.width).mm_height(csize.height-8);
         
         self.nameLabel.mm_left(_container.mm_x + 7) ;//与气泡对齐
         self.indicator.mm_sizeToFit().mm__centerY(_container.mm_centerY).mm_left(_container.mm_maxX + 8);
@@ -172,7 +172,7 @@
         
         CGSize csize = [self.messageData contentSize];
         CGFloat ctop = cellLayout.messageInsets.top + _nameLabel.mm_h;
-        self.container.mm_width(csize.width).mm_height(csize.height)
+        self.container.mm_width(csize.width).mm_height(csize.height-8)
         .mm_right(cellLayout.messageInsets.right+self.mm_w-self.avatarView.mm_x).mm_top(ctop);
         
         self.nameLabel.mm_right(_container.mm_r);
