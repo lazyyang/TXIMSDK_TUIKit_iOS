@@ -109,9 +109,10 @@
       } else if([dic[@"type"] intValue] == 2){//分享的名片
           ZYCustomeTwoCellData *cellData = [[ZYCustomeTwoCellData alloc] initWithDirection:msg.isSelf ? MsgDirectionOutgoing : MsgDirectionIncoming];
           cellData.avatarUrl = msg.faceURL;
-//          cellData.cover = dic[@"cover"];
-//          cellData.head_url = dic[@"head_url"];
-//          cellData.nickName = dic[@"nickname"];
+          cellData.nickname = dic[@"nickname"];
+          cellData.bind_id = dic[@"bind_id"];
+          cellData.head_url = dic[@"head_url"];
+          cellData.introduce = dic[@"introduce"];
           return cellData;
       }
   }

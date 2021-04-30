@@ -24,13 +24,11 @@
       [self.container addSubview:_headImageView];
       
       _nickLabel = [[UILabel alloc] initWithFrame:CGRectMake(70, 15, 540.0f/2-80,20 )];
-      _nickLabel.text = @"爱因斯坦（个人昵称）";
       _nickLabel.font = [UIFont boldSystemFontOfSize:16.0f];
       _nickLabel.textColor = [UIColor blackColor];
       [self.container addSubview:_nickLabel];
       
       _descLabel = [[UILabel alloc] initWithFrame:CGRectMake(70, 40, 540.0f/2-80, 20)];
-      _descLabel.text = @"这里是一段个人简介哦";
       _descLabel.font = [UIFont systemFontOfSize:14.0f];
       _descLabel.textColor = [UIColor blackColor];
       [self.container addSubview:_descLabel];
@@ -40,7 +38,7 @@
       [self.container addSubview:lineView];
       lineView.backgroundColor = RGB(0xd6, 0xd7, 0xdc);
       
-      UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 70, 540.0f/2, 36)];
+      UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 67, 540.0f/2, 36)];
       titleLabel.text = @"个人名片";
       titleLabel.font = [UIFont systemFontOfSize:14.0f];
       titleLabel.textColor = [UIColor blackColor];
@@ -58,9 +56,11 @@
 {
   [super fillWithData:data];
   self.customData = data;
- [self.headImageView sd_setImageWithURL:nil placeholderImage:[UIImage imageNamed:TUIKitResource(@"default_c2c_head")] completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+ [self.headImageView sd_setImageWithURL:[NSURL URLWithString:data.head_url] placeholderImage:[UIImage imageNamed:TUIKitResource(@"default_c2c_head")] completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
               
  }];
+    self.nickLabel.text = data.nickname;
+    self.descLabel.text = data.introduce;
 }
 - (void)layoutSubviews
 {
